@@ -67,6 +67,8 @@ setTimeout(() => {
             if (xml.includes(sr.s.normal)) {
                 if (xml.includes(sr.s.lang)) {
                     xml = xml.replace(sr.s.lang, sr.r.lang)
+                    console.log(`Replacing ${sr.s.lang} --> ${sr.r.lang`);
+                    
                 }
                 // else if(xml.includes(sr.s.default)){
                 //     xml = xml.replace(sr.s.lang, sr.r.lang)
