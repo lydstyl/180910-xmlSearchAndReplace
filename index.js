@@ -2,6 +2,8 @@
  * Prend un export récent d'xml + un csv avec des colonnes key, originalTxt (ex FR) et val (ex ES)
  * Parcour les lignes du csv et remplace originalTxt par val (bien pour les traductions)
  * Créé un nouvel xml avec les valeurs remplacées
+ * 
+ * \n par &#13;
  */
 
 /////////////////////////////////
@@ -27,7 +29,7 @@ global.opts = {
 /////////////////////////////////
 const getJsonFromCsv = require('./get-json-from-csv');
 const fs = require('fs')
-const htmlspecialchars = require('htmlspecialchars');
+const htmlspecialchars = require('./htmlspecialchars');
 getJsonFromCsv();
 setTimeout(() => {
     let stillToReplace = [];
