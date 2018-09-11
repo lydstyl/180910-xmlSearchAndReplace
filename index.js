@@ -43,10 +43,10 @@ function createResultXml(xml){
 function createNotFoundCsv(notFound){
     let csvArr = [];
     notFound.forEach( line => {
-        csvArr.push({KEY: line.key, SEARCH: line.normalSearch, WITHSPECIALCHAR: line.speSearch});
+        csvArr.push({KEY: line.key, BM: line.forNotFoundCsvBM, SEARCH: line.normalSearch, WITHSPECIALCHAR: line.speSearch, REPLACE: line.sepReplace});
     });
     const Json2csvParser = require('json2csv').Parser;
-    const fields = ['KEY', 'SEARCH', 'WITHSPECIALCHAR'];
+    const fields = ['KEY', 'BM', 'SEARCH', 'WITHSPECIALCHAR', 'REPLACE'];
     const json2csvParser = new Json2csvParser({ fields });
     const csv = json2csvParser.parse(csvArr);
     fs.writeFile('./notFound.csv', csv, function(err) {
@@ -81,6 +81,7 @@ setTimeout(() => {
                     normal: '>' + htmlspecialchars(line[global.opts.csv.header.val]) + '<',
                     lang: ' xml:lang="'+ global.opts.lang.to +'">' + htmlspecialchars(line[global.opts.csv.header.val]) + '<',
                     default: ' xml:lang="x-default">' + htmlspecialchars(line[global.opts.csv.header.val]) + '<',
+                    forNotFoundCsvBM: line[global.opts.csv.header.val]
                 }
             }
             if (xml.includes(sr.s.normal) || xml.includes(sr.s.normalSpe)) {
@@ -117,7 +118,9 @@ setTimeout(() => {
                     {
                         key: sr.key,
                         normalSearch: sr.s.normal,
-                        speSearch: sr.s.normalSpe
+                        speSearch: sr.s.normalSpe,
+                        sepReplace: sr.r.normal,
+                        forNotFoundCsvBM: sr.r.forNotFoundCsvBM
                     }
                 );
             }
