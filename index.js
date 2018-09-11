@@ -30,6 +30,29 @@ global.opts = {
 const getJsonFromCsv = require('./get-json-from-csv');
 const fs = require('fs')
 const htmlspecialchars = require('./htmlspecialchars2');
+
+function createResultXml(xml){
+    fs.writeFile(global.opts.xml.resultFilePath, xml, function(err) {
+        if(err) {
+            return console.log(err);
+        }
+        console.log('the new .xml was saved with replaced value and is: ' + global.opts.xml.resultFilePath);
+        console.log('IMPOTANT: you have to replace the catalog-id="storefront-fr-babyliss" with the lang you whant to import');
+    }); 
+}
+function createNotFoundCsv(notFound){
+    let csv = 'KEY;NORMALSEARCH;SPESEACH\n';
+    notFound.forEach( line => {
+        csv += line.key + ';' +line.normalSearch + ';' + line.speSearch + '\n';
+    });
+    fs.writeFile('./notFound.csv', csv, function(err) {
+        if(err) {
+            return console.log(err);
+        }
+        console.log('the notFound.csv was saved !');
+    }); 
+}
+
 getJsonFromCsv();
 setTimeout(() => {
     fs.readFile(global.opts.xml.fileName, 'utf8', function (err, xml) {
@@ -93,40 +116,12 @@ setTimeout(() => {
                         speSearch: sr.s.normalSpe
                     }
                 );
-                let debug = 'debug';
-                //notFound.push(sr.s.normalSpe);
-                //console.log('NOT FOUND' + sr.s.normal);
             }
         });
-
         createResultXml(xml);
         createNotFoundCsv(notFound);
-
         console.log(`surely found (includesNb): ${includesNb}`);
         console.log(`succesRate = replaceNb / global.jsonObj.length = ${replaceNb} / ${global.jsonObj.length} = ${replaceNb / global.jsonObj.length}`);
-        console.log('the xml with replaced value is: ' + global.opts.xml.resultFilePath);
         console.log('notFound: ' + notFound.length + ' --> see notFound.csv and do them manualy');
-        console.log('IMPOTANT: you have to replace the catalog-id="storefront-fr-babyliss" with the lang you whant to import');
-        
     });
 }, 3000);
-
-
-function createResultXml(xml){
-    console.log('aa');
-    //console.log(xml);
-
-
-    //var fs = require('fs');
-    fs.writeFile(global.opts.xml.resultFilePath, xml, function(err) {
-        if(err) {
-            return console.log(err);
-        }
-        console.log("The file was saved!");
-    }); 
-    
-}
-function createNotFoundCsv(notFound){
-    console.log('bb');
-    //console.log(notFound);
-}
