@@ -41,10 +41,14 @@ function createResultXml(xml){
     }); 
 }
 function createNotFoundCsv(notFound){
-    let csv = 'KEY;NORMALSEARCH;SPESEACH\n';
+    let csvArr = [];
     notFound.forEach( line => {
-        csv += line.key + ';' +line.normalSearch + ';' + line.speSearch + '\n';
+        csvArr.push({KEY: line.key, SEARCH: line.normalSearch, WITHSPECIALCHAR: line.speSearch});
     });
+    const Json2csvParser = require('json2csv').Parser;
+    const fields = ['KEY', 'SEARCH', 'WITHSPECIALCHAR'];
+    const json2csvParser = new Json2csvParser({ fields });
+    const csv = json2csvParser.parse(csvArr);
     fs.writeFile('./notFound.csv', csv, function(err) {
         if(err) {
             return console.log(err);
