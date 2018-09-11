@@ -29,10 +29,9 @@ global.opts = {
 /////////////////////////////////
 const getJsonFromCsv = require('./get-json-from-csv');
 const fs = require('fs')
-const htmlspecialchars = require('./htmlspecialchars');
+const htmlspecialchars = require('./htmlspecialchars2');
 getJsonFromCsv();
 setTimeout(() => {
-    let stillToReplace = [];
     fs.readFile(global.opts.xml.fileName, 'utf8', function (err, xml) {
         if (err) {
             return console.log(err);
@@ -42,6 +41,7 @@ setTimeout(() => {
         let notFound = [];
         global.jsonObj.forEach(line => {
             let sr = {
+                key: line[global.opts.csv.header.key],
                 s: {
                     normal: '>' + line[global.opts.csv.header.originalTxt] + '<',
                     lang: ' xml:lang="'+ global.opts.lang.from +'">' + line[global.opts.csv.header.originalTxt] + '<',
@@ -86,14 +86,47 @@ setTimeout(() => {
                     // console.log(`NORMAL-REPLACING ${sr.s.normal} --> ${sr.r.normal}`);
                 }
             }else{
-                notFound.push(sr.s.normal);
-                notFound.push(sr.s.normalSpe);
+                notFound.push(
+                    {
+                        key: sr.key,
+                        normalSearch: sr.s.normal,
+                        speSearch: sr.s.normalSpe
+                    }
+                );
+                let debug = 'debug';
+                //notFound.push(sr.s.normalSpe);
                 //console.log('NOT FOUND' + sr.s.normal);
             }
         });
-        console.log('notFound');
-        console.log(notFound);
-        console.log(`\nreplaceNb / global.jsonObj.length = ${replaceNb} / ${global.jsonObj.length} = ${replaceNb / global.jsonObj.length}`);
-        console.log(includesNb);
+
+        createResultXml(xml);
+        createNotFoundCsv(notFound);
+
+        console.log(`surely found (includesNb): ${includesNb}`);
+        console.log(`succesRate = replaceNb / global.jsonObj.length = ${replaceNb} / ${global.jsonObj.length} = ${replaceNb / global.jsonObj.length}`);
+        console.log('the xml with replaced value is: ' + global.opts.xml.resultFilePath);
+        console.log('notFound: ' + notFound.length + ' --> see notFound.csv and do them manualy');
+        console.log('IMPOTANT: you have to replace the catalog-id="storefront-fr-babyliss" with the lang you whant to import');
+        
     });
 }, 3000);
+
+
+function createResultXml(xml){
+    console.log('aa');
+    //console.log(xml);
+
+
+    //var fs = require('fs');
+    fs.writeFile(global.opts.xml.resultFilePath, xml, function(err) {
+        if(err) {
+            return console.log(err);
+        }
+        console.log("The file was saved!");
+    }); 
+    
+}
+function createNotFoundCsv(notFound){
+    console.log('bb');
+    //console.log(notFound);
+}
